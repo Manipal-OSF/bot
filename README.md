@@ -1,11 +1,11 @@
-# MAHEbot
-A community bot, used in the MIT CO'25 server.
+# OSF-bot
+A community bot, used in the Manipal OSF server.
 
 ---
 
 ## Contribute
 
-If you want to contribute, report a problem, add or suggest a new fix or feature, you can [open a new issue](https://github.com/Manipal-OSF/MAHE-bot/issues/new). The issue should be accepted and discussed before starting to work on the feature. See [Dev Installation](#Dev-Installation) to know how to start working on said feature.
+If you want to contribute, report a problem, add or suggest a new fix or feature, you can [open a new issue](https://github.com/Manipal-OSF/OSF-bot/issues/new). The issue should be accepted and discussed before starting to work on the feature. See [Dev Installation](#Dev-Installation) to know how to start working on said feature.
 
 ---
 
@@ -16,11 +16,11 @@ To get a **token**, go to [Discord Developer Portal](https://discord.com/develop
 ## Dev Installation
 
 1. Clone the repository:
-- Traditional way: `https://github.com/Manipal-OSF/MAHE-bot.git` or `git@github.com:Manipal-OSF/MAHE-bot.git`.
+- Traditional way: `https://github.com/Manipal-OSF/OSF-bot.git` or `git@github.com:Manipal-OSF/OSF-bot.git`.
 
-- Using Github CLI: `gh repo clone Manipal-OSF/MAHE-bot`.
+- Using Github CLI: `gh repo clone Manipal-OSF/OSF-bot`.
 
-Then navigate to the directory `cd MAHE-bot/`
+Then navigate to the directory `cd OSF-bot/`
 
 2. Create a new branch by `git checkout -b <name of new local branch> main` or `git switch -c <name of new local branch> main`. Make sure the new branch name is related to the feature or the fix you have in mind.
 
