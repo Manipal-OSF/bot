@@ -1,5 +1,5 @@
-from discord import Intents
-from discord.ext import commands
+from disnake import Intents
+from disnake.ext import commands
 from osfbot import constants
 
 
