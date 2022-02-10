@@ -1,6 +1,6 @@
 from discord import Intents
 from discord.ext import commands
-from mahebot import constants
+from osfbot import constants
 
 
 class Bot(commands.Bot):

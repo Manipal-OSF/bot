@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "mahe-bot"
+name = "osf-bot"
 version = "0.1.0"
-description = "A community bot used in the MIT CO-25 server."
+description = "A community bot used in the Manipal OSF server."
 authors = ["dhzdhd"]
 
 [tool.poetry.dependencies]
@@ -24,7 +24,7 @@ pre-commit = "^2.15.0"
 python-dotenv = "^0.19.1"
 
 [tool.taskipy.tasks]
-bot = { cmd = "python -m mahebot", help = "Runs Bot"}
+bot = { cmd = "python -m osfbot", help = "Runs Bot"}
 lint = { cmd = "pre-commit run --all-files", help = "Lints project" }
 precommit = { cmd = "pre-commit install", help = "Installs the pre-commit git hook" }
 format = { cmd = "black mahebot", help = "Runs the black python formatter" }
