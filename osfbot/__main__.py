@@ -1,4 +1,4 @@
-from mahebot.bot import Bot
+from osfbot.bot import Bot
 
 
 if __name__ == "__main__":
