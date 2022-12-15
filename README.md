@@ -1,4 +1,4 @@
-# OSF-bot
+# OSF Bot
 A community bot, used in the Manipal OSF server.
 
 ---
