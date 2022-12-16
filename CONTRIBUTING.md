@@ -1,7 +1,12 @@
 # CONTRIBUTING
 
+First off, thanks for taking the time to contribute. We really appreciate your interest in this repository.
+
+The following is a set of guidelines for contributing to the repository. These are mostly guidelines, not hard rules.
+
 ### Table of Contents
-- [General](#general)
+
+- [General](#general) (See this first!)
 - [Basic](#basic)
 - [Advanced](#advanced)
 
@@ -13,32 +18,51 @@ This part will tell you how to go about contributing to the repository in genera
 Follow the given steps:
 
 - Go to the issues tab in the repository and check the present issues.
-- If you found a new bug/ have a enhancement in mind, check for a redundant issue and if it does not exist, create a new issue.
+- If you found a new bug/ have a enhancement in mind, check for a redundant issue and if it does not exist, create a new issue. You can also ask the core members to assign you to an existing issue.
 - Wait for discussion/approval from the core/board members.
-- Once approved and assigned, create a fork of the repository and clone it locally.
+- Once approved and assigned,
+  - If the issue is a bug report/ feature suggestion, your contribution ends at creating the issue.
+  - If it involves changing documentation, head to [basic](#basic)
+  - If it involves in fixing a bug or refactoring code or implementing a feature, head to [advanced](#advanced)
 
 ---
 
 ### Basic
 
-This part will tell you how to create basic contributions to the repository which requires basic python or no python knowledge at all.
+This part will tell you how to make basic contributions to the repository which requires basic python or no python knowledge at all.
 
-- [No code contributions](#no-code)
-- [Code contributions](#basic-python)
+These contributions are of the form of changing documentation or some small non code refactors.
 
-#### No code
+##### Instructions
 
-Having followed the general instructions, make changes in the github UI and create a pull request. (The UI guides you in creating one)  
-
-
-#### Basic python
-
-Having followed the general instructions, create a new branch, make changes and create a pull request.
+- Having followed the general instructions, make changes on GitHub and create a pull request using the GitHub UI. (The UI guides you in creating one)
 
 ---
 
 ### Advanced
 
-This part will tell you how to create advanced contributions to repository which requires basic knowledge of python decorators, async and the disnake library  
-Follow the basic contributions first to get an idea of how to contribute to the repository.
+This part will tell you how to create advanced contributions to repository which requires basic knowledge of python **decorators**, **async** and the **disnake** library.  
 
+#### Instructions
+
+- Having followed the [general](#general) instructions, create a fork of the repository and clone it locally.
+- Create a new branch as given in [naming a branch](#naming-a-branch)
+- The dev setup is documented in the [README](README.md)
+- Code the feature / bug fix / refactor
+- Before pushing, execute all precommit hooks which includes linting and formatting. Fix all the issues that might arise from doing so.
+- Push the code to your fork and open a pull request
+- Wait for reviews from other contributors / core members and resolve all issues that might arise
+- Once the pull request has been successfully merged, delete the branch
+
+### Extras
+
+#### Naming a branch
+
+Create a branch with the following format
+
+- `fix/[desc]` For bug fixes
+- `feat/[desc]` For new features
+- `docs/[desc]` For documentation
+- `refactor/[desc]` For refactors
+
+`desc` should be short and concise.
