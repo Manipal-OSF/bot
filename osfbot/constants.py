@@ -9,6 +9,7 @@ if ENVIRONMENT is None:
     load_dotenv(dotenv_path=f"{os.getcwd()}/.env")
 
 # Environment Vars
+PREFIX = os.getenv("PREFIX", ">")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # Paths

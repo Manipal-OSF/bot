@@ -1,6 +1,6 @@
 import os
 
-from disnake import Intents
+from disnake import AllowedMentions, Intents
 from disnake.ext import commands
 from osfbot import constants
 
@@ -13,7 +13,20 @@ class Bot(commands.Bot):
         intents.members = True
         intents.presences = True
 
-        super().__init__(command_prefix=">")
+        test_guilds = None
+        if constants.TEST_GUILDS:
+            test_guilds = constants.TEST_GUILDS
+
+        super().__init__(
+            command_prefix=constants.PREFIX,
+            intents=intents,
+            test_guilds=test_guilds,
+            allowed_mentions=AllowedMentions(
+                everyone=None,
+                users=True,
+                replied_user=True,
+            ),
+        )
 
     def run(self) -> None:
         """Run the bot with token present in .env."""
