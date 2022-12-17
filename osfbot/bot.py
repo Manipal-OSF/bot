@@ -1,6 +1,6 @@
 import os
 
-from disnake import AllowedMentions, Intents
+from disnake import AllowedMentions, Embed, Intents
 from disnake.ext import commands
 from osfbot import constants
 
@@ -28,6 +28,15 @@ class Bot(commands.Bot):
             ),
         )
 
+    def load_extensions(self) -> None:
+        """Load all the extensions in the exts/ folder."""
+        for extension in constants.EXTENSIONS.glob("*/*.py"):
+            if extension.name.startswith("_"):
+                continue  # Ignore files starting with _
+            ext_path = str(extension).replace(os.sep, ".")[:-3]  # Truncate .py
+            self.load_extension(ext_path)
+            print(f"Extension loaded: {ext_path}")
+
     def run(self) -> None:
         """Run the bot with token present in .env."""
         if constants.BOT_TOKEN is None:
@@ -41,15 +50,16 @@ class Bot(commands.Bot):
         """Runs the bot when connected to discord and is ready."""
         print("The bot is online!")
         self.load_extensions()
+        await self.startup_alert()
 
-    def load_extensions(self) -> None:
-        """Load all the extensions in the exts/ folder."""
-        for extension in constants.EXTENSIONS.glob("*/*.py"):
-            if extension.name.startswith("_"):
-                continue  # Ignore files starting with _
-            ext_path = str(extension).replace(os.sep, ".")[:-3]  # Truncate .py
-            self.load_extension(ext_path)
-            print(f"Extension loaded: {ext_path}")
+    async def startup_alert(self) -> None:
+        """Announce bot's presence to the devlog channel."""
+        embed = Embed(
+            title="Bot Startup",
+            description="The bot is back online!",
+            color=constants.Colors.green,
+        )
+        await self.get_channel(constants.Channels.devlog).send(embed=embed)
 
     async def close(self) -> None:
         """Close the bot gracefully."""
