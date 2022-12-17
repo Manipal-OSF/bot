@@ -27,7 +27,7 @@ black = "^22.1.0"
 bot = { cmd = "python -m osfbot", help = "Runs Bot"}
 lint = { cmd = "pre-commit run --all-files", help = "Lints project" }
 precommit = { cmd = "pre-commit install", help = "Installs the pre-commit git hook" }
-format = { cmd = "black mahebot", help = "Runs the black python formatter" }
+format = { cmd = "black osfbot", help = "Runs the black python formatter" }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
