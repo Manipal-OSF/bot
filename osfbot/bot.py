@@ -1,7 +1,9 @@
+import asyncio
 import os
 
 from disnake import AllowedMentions, Embed, Intents
 from disnake.ext import commands
+from disnake.utils import utcnow
 from osfbot import constants
 
 
@@ -28,6 +30,8 @@ class Bot(commands.Bot):
             ),
         )
 
+        self.initiated = False
+
     def load_extensions(self) -> None:
         """Load all the extensions in the exts/ folder."""
         for extension in constants.EXTENSIONS.glob("*/*.py"):
@@ -47,10 +51,13 @@ class Bot(commands.Bot):
         super().run(constants.BOT_TOKEN)
 
     async def on_ready(self) -> None:
-        """Runs the bot when connected to discord and is ready."""
+        """Runs the bot when connected to Discord and is ready."""
+        if not self.initiated:
+            await asyncio.sleep(2)
+            self.load_extensions()
+            await self.startup_alert()
+            self.initiated = True
         print("The bot is online!")
-        self.load_extensions()
-        await self.startup_alert()
 
     async def startup_alert(self) -> None:
         """Announce bot's presence to the devlog channel."""
@@ -58,6 +65,7 @@ class Bot(commands.Bot):
             title="Bot Startup",
             description="The bot is back online!",
             color=constants.Colors.green,
+            timestamp=utcnow(),
         )
         await self.get_channel(constants.Channels.devlog).send(embed=embed)
 
