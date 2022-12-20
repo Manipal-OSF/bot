@@ -4,8 +4,9 @@ from typing import Optional
 from disnake import Embed, Message, RawMessageDeleteEvent, TextChannel, User
 from disnake.ext.commands import Cog
 from loguru import logger
-from osfbot.bot import Bot
-from osfbot.constants import Channels, Colors
+
+from ...bot import Bot
+from ...constants import Channels, Colors
 
 
 class ModerationLogs(Cog):

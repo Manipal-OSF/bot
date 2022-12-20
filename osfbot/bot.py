@@ -4,7 +4,8 @@ import os
 from disnake import AllowedMentions, Embed, Intents
 from disnake.ext import commands
 from disnake.utils import utcnow
-from osfbot import constants
+
+from . import constants
 
 
 class Bot(commands.Bot):
