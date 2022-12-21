@@ -1,9 +1,9 @@
 import asyncio
 import os
+from datetime import datetime
 
 from disnake import AllowedMentions, Embed, Intents
 from disnake.ext import commands
-from disnake.utils import utcnow
 
 from . import constants
 
@@ -66,7 +66,7 @@ class Bot(commands.Bot):
             title="Bot Startup",
             description="The bot is back online!",
             color=constants.Colors.green,
-            timestamp=utcnow(),
+            timestamp=datetime.now(),
         )
         await self.get_channel(constants.Channels.devlog).send(embed=embed)
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from disnake import Embed, Message, RawMessageDeleteEvent, TextChannel, User
+from disnake import Embed, Message, RawMessageDeleteEvent, TextChannel
 from disnake.ext.commands import Cog
 from loguru import logger
 
@@ -28,33 +28,6 @@ class ModerationLogs(Cog):
 
         return await self.log_channel.send(embed=embed)
 
-    async def post_formatted_message(
-        self,
-        actor: User,
-        action: str,
-        body: Optional[str] = None,
-        link: Optional[str] = None,
-        color: int = Colors.green,
-    ) -> None:
-        """Format an embed to be posted in the log channel."""
-        logger.trace(f"Creating log {actor.id} {action}")
-
-        embed = Embed(
-            title=(
-                f"{actor} "
-                f"{f'({actor.display_name}) ' if actor.display_name != actor.name else ''}"
-                f"({actor.id}) {action}"  # Display actor's display name/username accordingly.
-            ),
-            description=body or "<N/A>",
-            color=color,
-            timestamp=datetime.utcnow(),
-        ).set_thumbnail(url=actor.display_avatar.url)
-
-        if link:
-            embed.url = link
-
-        await self.post_message(embed=embed)
-
     @Cog.listener()
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent) -> None:
         """Logs message deletion."""
@@ -62,12 +35,32 @@ class ModerationLogs(Cog):
             if message.author.bot:
                 return
 
-            await self.post_formatted_message(
-                message.author,
-                f"deleted a message in {message.channel}",
-                body=message.content[:1024],
+            fields = [
+                {
+                    "name": "Author",
+                    "value": f"{message.author.mention} **({message.author.name}) ({message.author.id})**",
+                },
+                {
+                    "name": "Channel",
+                    "value": f"{message.channel.mention} **({message.channel.name}) ({message.channel.id})**",
+                },
+                {
+                    "name": "Content",
+                    "value": f"```{message.content[:1000]+('...' if len(message.content) > 1024 else '')}```",
+                },
+            ]
+
+            embed = Embed(
+                title=f"Message Deleted. ({message.id})",
+                timestamp=datetime.now(),
                 color=Colors.red,
-            )
+            ).set_thumbnail(message.author.avatar.url)
+
+            for field in fields:
+                embed.add_field(name=field["name"], value=field["value"], inline=False)
+
+            await self.post_message(embed=embed)
+
         else:
             await self.post_message(
                 Embed(
@@ -79,6 +72,39 @@ class ModerationLogs(Cog):
                     color=Colors.red,
                 )
             )
+
+    @Cog.listener()
+    async def on_message_edit(self, before: Message, after: Message) -> None:
+        """Logs message edits."""
+        if after.author.bot or before.content == after.content:
+            return
+
+        fields = [
+            {
+                "name": "Author",
+                "value": f"{after.author.mention} **({after.author.name}) ({after.author.id})**",
+            },
+            {
+                "name": "Before",
+                "value": f"```{before.content[:1000]+('...' if len(before.content) > 1024 else '')}```",
+            },
+            {
+                "name": "After",
+                "value": f"```{after.content[:1000]+('...' if len(after.content) > 1024 else '')}```",
+            },
+        ]
+
+        embed = Embed(
+            title=f"Message Edited. ({after.id})",
+            timestamp=datetime.now(),
+            color=Colors.yellow,
+            url=after.jump_url,
+        ).set_thumbnail(after.author.avatar.url)
+
+        for field in fields:
+            embed.add_field(name=field["name"], value=field["value"], inline=False)
+
+        await self.post_message(embed=embed)
 
 
 def setup(bot: Bot) -> None:
