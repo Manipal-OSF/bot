@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import Optional
 
-from disnake import Embed, Message, RawMessageDeleteEvent, TextChannel
+from disnake import Embed, Member, Message, RawMessageDeleteEvent, TextChannel
 from disnake.ext.commands import Cog
+from disnake.utils import format_dt
 from loguru import logger
 
 from ...bot import Bot
@@ -28,6 +29,29 @@ class ModerationLogs(Cog):
 
         return await self.log_channel.send(embed=embed)
 
+    async def post_formatted_message(
+        self,
+        actor: Member,
+        title: str,
+        color: int = Colors.green,
+        fields: Optional[list] = None,
+        url: Optional[str] = None,
+    ) -> None:
+        """Formats an embed to be posted in the log channel."""
+        embed = Embed(
+            title=title,
+            color=color,
+            timestamp=datetime.now(),
+        ).set_thumbnail(url=actor.display_avatar.url)
+
+        if url:
+            embed.url = url
+
+        for field in fields:
+            embed.add_field(name=field["name"], value=field["value"])
+
+        await self.post_message(embed=embed)
+
     @Cog.listener()
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent) -> None:
         """Logs message deletion."""
@@ -50,16 +74,12 @@ class ModerationLogs(Cog):
                 },
             ]
 
-            embed = Embed(
-                title=f"Message Deleted. ({message.id})",
-                timestamp=datetime.now(),
+            await self.post_formatted_message(
+                actor=message.author,
+                title=f"Message Deleted ({message.id})",
                 color=Colors.red,
-            ).set_thumbnail(message.author.avatar.url)
-
-            for field in fields:
-                embed.add_field(name=field["name"], value=field["value"], inline=False)
-
-            await self.post_message(embed=embed)
+                fields=fields,
+            )
 
         else:
             await self.post_message(
@@ -94,17 +114,90 @@ class ModerationLogs(Cog):
             },
         ]
 
-        embed = Embed(
-            title=f"Message Edited. ({after.id})",
-            timestamp=datetime.now(),
+        await self.post_formatted_message(
+            actor=after.author,
+            title=f"Message Edited ({after.id})",
             color=Colors.yellow,
+            fields=fields,
             url=after.jump_url,
-        ).set_thumbnail(after.author.avatar.url)
+        )
 
-        for field in fields:
-            embed.add_field(name=field["name"], value=field["value"], inline=False)
+    @Cog.listener()
+    async def on_member_join(self, member: Member) -> None:
+        """Logs members joining."""
+        fields = [
+            {
+                "name": "Name",
+                "value": f"{member}",
+            },
+            {
+                "name": "Profile",
+                "value": f"{member.mention}",
+            },
+            {
+                "name": "Account Created",
+                "value": f"{format_dt(member.created_at)} ({format_dt(member.created_at, 'R')})",
+            },
+        ]
 
-        await self.post_message(embed=embed)
+        await self.post_formatted_message(
+            actor=member,
+            title=f"Member Joined ({member.id})",
+            fields=fields,
+        )
+
+    @Cog.listener()
+    async def on_member_remove(self, member: Member) -> None:
+        """Logs members leaving."""
+        fields = [
+            {
+                "name": "Name",
+                "value": f"{member}",
+            },
+            {
+                "name": "Profile",
+                "value": f"{member.mention}",
+            },
+            {
+                "name": "Account Created",
+                "value": f"{format_dt(member.created_at)} ({format_dt(member.created_at, 'R')})",
+            },
+        ]
+
+        await self.post_formatted_message(
+            actor=member,
+            title=f"Member Left ({member.id})",
+            color=Colors.red,
+            fields=fields,
+        )
+
+    @Cog.listener()
+    async def on_member_update(self, before: Member, after: Member) -> None:
+        """Logs nickname changes."""
+        if before.nick == after.nick:
+            return
+
+        fields = [
+            {
+                "name": "Profile",
+                "value": f"{after.mention}",
+            },
+            {
+                "name": "Before",
+                "value": f"{before.nick}",
+            },
+            {
+                "name": "After",
+                "value": f"{after.nick}",
+            },
+        ]
+
+        await self.post_formatted_message(
+            actor=after,
+            title=f"Nickname Updated ({after.id})",
+            color=Colors.blue,
+            fields=fields,
+        )
 
 
 def setup(bot: Bot) -> None:
