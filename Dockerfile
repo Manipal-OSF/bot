@@ -14,7 +14,7 @@ RUN pip install poetry==1.2.2
 COPY pyproject.toml poetry.lock ./
 RUN poetry export --without-hashes > requirements.txt
 RUN pip uninstall poetry -y
-RUN pip install -Ur requirements.txt
+RUN pip install -U -r requirements.txt
 
 # Copy the source code in next to last to optimize rebuilding the image
 COPY . .
