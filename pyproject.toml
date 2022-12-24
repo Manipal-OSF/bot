@@ -5,8 +5,8 @@ description = "A community bot used in the Manipal OSF server."
 authors = ["dhzdhd"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
-disnake = "^2.3.1"
+python = "^3.11.1"
+disnake = "^2.7.0"
 loguru = "^0.6.0"
 
 [tool.poetry.dev-dependencies]

@@ -14,6 +14,7 @@ class Bot(commands.Bot):
     def __init__(self) -> None:
         intents = Intents.default()
         intents.members = True
+        intents.message_content = True
         intents.presences = True
 
         test_guilds = None
