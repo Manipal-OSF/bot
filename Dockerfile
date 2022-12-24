@@ -7,7 +7,6 @@ ENV PIP_NO_CACHE_DIR=false
 WORKDIR /bot
 
 # Install project dependencies
-
 RUN pip install -U pip wheel setuptools
 RUN pip install poetry==1.2.2
 
