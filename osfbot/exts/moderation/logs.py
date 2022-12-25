@@ -1,8 +1,17 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
-from disnake import Embed, Member, Message, RawMessageDeleteEvent, TextChannel
+from disnake import (
+    ButtonStyle,
+    Component,
+    Embed,
+    Member,
+    Message,
+    RawMessageDeleteEvent,
+    TextChannel,
+)
 from disnake.ext.commands import Cog
+from disnake.ui import Button
 from disnake.utils import format_dt
 from loguru import logger
 
@@ -18,7 +27,9 @@ class ModerationLogs(Cog):
         self.log_channel: Optional[TextChannel] = None
         super().__init__()
 
-    async def post_message(self, embed: Embed) -> Optional[Message]:
+    async def post_message(
+        self, embed: Embed, components: List[Component] = None
+    ) -> Optional[Message]:
         """Send the given message in the log channel."""
         if not self.log_channel:
             await self.bot.wait_until_ready()
@@ -27,7 +38,7 @@ class ModerationLogs(Cog):
             if not self.log_channel:
                 logger.error(f"Failed to get log channel with ID ({Channels.log})")
 
-        return await self.log_channel.send(embed=embed)
+        return await self.log_channel.send(embed=embed, components=components)
 
     async def post_formatted_message(
         self,
@@ -36,6 +47,7 @@ class ModerationLogs(Cog):
         color: int = Colors.green,
         fields: Optional[list] = None,
         url: Optional[str] = None,
+        components: List[Component] = None,
     ) -> None:
         """Formats an embed to be posted in the log channel."""
         embed = Embed(
@@ -48,9 +60,11 @@ class ModerationLogs(Cog):
             embed.url = url
 
         for field in fields:
-            embed.add_field(name=field["name"], value=field["value"])
+            embed.add_field(
+                name=field["name"], value=field["value"], inline=field["inline"]
+            )
 
-        await self.post_message(embed=embed)
+        await self.post_message(embed=embed, components=components)
 
     @Cog.listener()
     async def on_raw_message_delete(self, payload: RawMessageDeleteEvent) -> None:
@@ -63,14 +77,17 @@ class ModerationLogs(Cog):
                 {
                     "name": "Author",
                     "value": f"{message.author.mention} **({message.author.name}) ({message.author.id})**",
+                    "inline": False,
                 },
                 {
                     "name": "Channel",
                     "value": f"{message.channel.mention} **({message.channel.name}) ({message.channel.id})**",
+                    "inline": False,
                 },
                 {
                     "name": "Content",
                     "value": f"```{message.content[:1000]+('...' if len(message.content) > 1024 else '')}```",
+                    "inline": False,
                 },
             ]
 
@@ -82,13 +99,12 @@ class ModerationLogs(Cog):
             )
 
         else:
+            channel = await self.bot.fetch_channel(payload.channel_id)
+
             await self.post_message(
                 Embed(
-                    title=(
-                        f"Message ID ({payload.message_id}) deleted in "
-                        f"{await self.bot.fetch_channel(payload.channel_id)}."
-                    ),
-                    description="The message wasn't cached, and cannot be displayed.",
+                    title=f"Message Deleted ({payload.message_id})",
+                    description=f"The message in #{channel.mention} wasn't cached, and cannot be displayed.",
                     color=Colors.red,
                 )
             )
@@ -103,15 +119,26 @@ class ModerationLogs(Cog):
             {
                 "name": "Author",
                 "value": f"{after.author.mention} **({after.author.name}) ({after.author.id})**",
+                "inline": False,
             },
             {
                 "name": "Before",
                 "value": f"```{before.content[:1000]+('...' if len(before.content) > 1024 else '')}```",
+                "inline": False,
             },
             {
                 "name": "After",
                 "value": f"```{after.content[:1000]+('...' if len(after.content) > 1024 else '')}```",
+                "inline": False,
             },
+        ]
+
+        components = [
+            Button(
+                style=ButtonStyle.link,
+                label="Jump to message",
+                url=after.jump_url,
+            ),
         ]
 
         await self.post_formatted_message(
@@ -119,7 +146,7 @@ class ModerationLogs(Cog):
             title=f"Message Edited ({after.id})",
             color=Colors.yellow,
             fields=fields,
-            url=after.jump_url,
+            components=components,
         )
 
     @Cog.listener()
@@ -129,14 +156,17 @@ class ModerationLogs(Cog):
             {
                 "name": "Name",
                 "value": f"{member}",
+                "inline": True,
             },
             {
                 "name": "Profile",
                 "value": f"{member.mention}",
+                "inline": True,
             },
             {
                 "name": "Account Created",
                 "value": f"{format_dt(member.created_at)} ({format_dt(member.created_at, 'R')})",
+                "inline": True,
             },
         ]
 
@@ -153,14 +183,17 @@ class ModerationLogs(Cog):
             {
                 "name": "Name",
                 "value": f"{member}",
+                "inline": True,
             },
             {
                 "name": "Profile",
                 "value": f"{member.mention}",
+                "inline": True,
             },
             {
                 "name": "Account Created",
                 "value": f"{format_dt(member.created_at)} ({format_dt(member.created_at, 'R')})",
+                "inline": True,
             },
         ]
 
@@ -181,14 +214,17 @@ class ModerationLogs(Cog):
             {
                 "name": "Profile",
                 "value": f"{after.mention}",
+                "inline": True,
             },
             {
                 "name": "Before",
                 "value": f"{before.nick}",
+                "inline": True,
             },
             {
                 "name": "After",
                 "value": f"{after.nick}",
+                "inline": True,
             },
         ]
 
