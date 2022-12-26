@@ -28,7 +28,9 @@ class ModerationLogs(Cog):
         super().__init__()
 
     async def post_message(
-        self, embed: Embed, components: List[Component] = None
+        self,
+        embed: Embed,
+        components: List[Component] = None,
     ) -> Optional[Message]:
         """Send the given message in the log channel."""
         if not self.log_channel:
@@ -104,7 +106,7 @@ class ModerationLogs(Cog):
             await self.post_message(
                 Embed(
                     title=f"Message Deleted ({payload.message_id})",
-                    description=f"The message in #{channel.mention} wasn't cached, and cannot be displayed.",
+                    description=f"The message in {channel.mention} wasn't cached, and cannot be displayed.",
                     color=Colors.red,
                 )
             )
