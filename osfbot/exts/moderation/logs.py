@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List, Optional
 
 from disnake import (
     ButtonStyle,
@@ -24,20 +23,20 @@ class ModerationLogs(Cog):
 
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.log_channel: Optional[TextChannel] = None
+        self.log_channel: TextChannel | None = None
         super().__init__()
 
     async def post_message(
         self,
         embed: Embed,
-        components: List[Component] = None,
-    ) -> Optional[Message]:
+        components: list[Component] = None,
+    ) -> Message | None:
         """Send the given message in the log channel."""
-        if not self.log_channel:
+        if self.log_channel is None:
             await self.bot.wait_until_ready()
             self.log_channel = await self.bot.fetch_channel(Channels.log)
 
-            if not self.log_channel:
+            if self.log_channel is None:
                 logger.error(f"Failed to get log channel with ID ({Channels.log})")
 
         return await self.log_channel.send(embed=embed, components=components)
@@ -47,9 +46,9 @@ class ModerationLogs(Cog):
         actor: Member,
         title: str,
         color: int = Colors.green,
-        fields: Optional[list] = None,
-        url: Optional[str] = None,
-        components: List[Component] = None,
+        fields: list | None = None,
+        url: str | None = None,
+        components: list[Component] = None,
     ) -> None:
         """Formats an embed to be posted in the log channel."""
         embed = Embed(
