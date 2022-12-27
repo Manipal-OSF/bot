@@ -1,8 +1,15 @@
 from datetime import datetime
-from typing import Optional, Union
 
-from disnake import Embed, Forbidden, Member, Message, TextChannel, User
-from disnake.ext.commands import Cog, Context, command, has_any_role
+from disnake import (
+    ApplicationCommandInteraction,
+    Embed,
+    Forbidden,
+    Member,
+    Message,
+    TextChannel,
+    User,
+)
+from disnake.ext.commands import Cog, has_any_role, slash_command
 from loguru import logger
 
 from ...bot import Bot
@@ -14,24 +21,24 @@ class DirectMessages(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.dm_log_channel: Optional[TextChannel] = None
+        self.dm_log_channel: TextChannel | None = None
         super().__init__()
 
-    async def post_message(self, embed: Embed) -> Optional[Message]:
+    async def post_message(self, embed: Embed) -> Message | None:
         """Send the given message in the DM log channel."""
-        if not self.dm_log_channel:
+        if self.dm_log_channel is None:
             await self.bot.wait_until_ready()
             self.dm_log_channel = await self.bot.fetch_channel(Channels.dmlog)
 
-            if not self.dm_log_channel:
+            if self.dm_log_channel is None:
                 logger.error(f"Failed to get log channel with ID ({Channels.dmlog})")
 
         return await self.dm_log_channel.send(embed=embed)
 
     async def dm_message(
         self,
-        author: Union[Member, User],
-        receiver: Union[Member, User],
+        author: Member | User,
+        receiver: Member | User,
         color: int = Colors.client_dark,
         message: str = "<N/A>",
     ) -> None:
@@ -52,32 +59,33 @@ class DirectMessages(Cog):
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
         """Logs incoming DMs to the specified log channel."""
-        if message.guild:
+        if message.guild or message.author == self.bot.user:
             return
 
         await self.dm_message(
             author=message.author, receiver=self.bot.user, message=message.content
         )
 
-    @command(aliases=("dm",))
+    @slash_command()
     @has_any_role(Roles.moderator)
-    async def message(self, ctx: Context, user: Member, *, message: str) -> None:
-        """Send a DM to a specified user."""
+    async def message(
+        self, itr: ApplicationCommandInteraction, user: Member, *, message: str
+    ) -> None:
+        """Allows moderators to DM specific users."""
         logger.info(f"Sending message {message!r} to {user}")
+
+        await itr.response.defer(ephemeral=True)
 
         try:
             await user.send(message)
-            await ctx.message.delete()
-
-            await self.dm_message(author=ctx.author, receiver=user, message=message)
+            await itr.edit_original_response("DM Sent.")
+            await self.dm_message(author=itr.author, receiver=user, message=message)
         except Forbidden:
-            await ctx.message.add_reaction("\N{CROSS MARK}")
-
-            await self.post_message(
-                Embed(
+            await itr.edit_original_response(
+                embed=Embed(
                     title="DM Failed", color=Colors.red, timestamp=datetime.now()
                 ).set_footer(
-                    text=f"{ctx.author} -> {user}", icon_url=ctx.author.avatar.url
+                    text=f"{itr.author} -> {user}", icon_url=itr.author.avatar.url
                 )
             )
 
