@@ -25,8 +25,15 @@ class Colors:
     orange = 0xF09600
     red = 0xE72B31
     yellow = 0xF3EA00
+    client_dark = 0x303136
+    client_light = 0xF2F3F5
 
 
 class Channels(NamedTuple):
     devlog = int(os.getenv("CHANNEL_DEVLOG", 937615771276812330))
     log = int(os.getenv("CHANNEL_LOG", 937615771276812330))
+    dmlog = int(os.getenv("CHANNEL_DMLOG", 937615771276812330))
+
+
+class Roles(NamedTuple):
+    moderator = int(os.getenv("ROLE_MODERATOR", 839527120354279474))
