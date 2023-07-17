@@ -37,3 +37,4 @@ class Channels(NamedTuple):
 
 class Roles(NamedTuple):
     moderator = int(os.getenv("ROLE_MODERATOR", 839527120354279474))
+    osf_member = int(os.getenv("ROLE_OSF_MEMBER", 996267159577698364))
