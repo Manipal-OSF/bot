@@ -13,6 +13,3 @@ services:
 
     environment:
       - ENVIRONMENT=DOCKER-DEVELOPMENT
-
-    volumes:
-      - .:/bot
