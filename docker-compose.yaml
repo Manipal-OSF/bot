@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  osfbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: osfbot
+    init: true
+
+    restart: on-failure
+    env_file:
+      - .env
+
+    environment:
+      - ENVIRONMENT=DOCKER-DEVELOPMENT
