@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: osfbot
+    image: ghcr.io/Manipal-OSF/bot:latest
     init: true
 
     restart: on-failure
