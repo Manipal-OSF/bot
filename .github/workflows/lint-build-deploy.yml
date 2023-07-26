@@ -86,7 +86,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     # Build and push the container to the GitHub Container
-    # Repository. The container will be tagged as "latest"
+    # Repository. The container will be tagged as "main"
     # and with the short SHA of the commit.
     - name: Build and push
       uses: docker/build-push-action@v4
@@ -94,10 +94,10 @@ jobs:
         context: bot/
         file: bot/Dockerfile
         push: true
-        cache-from: type=registry,ref=ghcr.io/Manipal-OSF/bot:latest
+        cache-from: type=registry,ref=ghcr.io/manipal-osf/bot:main
         cache-to: type=inline
         tags: |
-          ghcr.io/Manipal-OSF/bot:latest
-          ghcr.io/Manipal-OSF/bot:${{ steps.sha_tag.outputs.tag }}
+          ghcr.io/manipal-osf/bot:main
+          ghcr.io/manipal-osf/bot:${{ steps.sha_tag.outputs.tag }}
         build-args: |
           git_sha=${{ github.sha }}

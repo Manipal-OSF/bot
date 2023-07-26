@@ -2,7 +2,7 @@ version: "3.8"
 services:
   osfbot:
     container_name: osfbot
-    image: ghcr.io/Manipal-OSF/bot:latest
+    image: ghcr.io/manipal-osf/bot:main
     init: true
 
     restart: on-failure
