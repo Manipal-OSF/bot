@@ -41,7 +41,7 @@ class OSFValidation(Cog):
                 logger.error(f"Failed to get log channel with ID ({Channels.log})")
 
         return await self.log_channel.send(
-            Embed(
+            embed=Embed(
                 title=title,
                 description=description,
                 timestamp=datetime.now(),
